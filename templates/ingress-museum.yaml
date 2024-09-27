@@ -1,0 +1,29 @@
+{{- if .Values.museum.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: museum-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: "{{ .Values.museum.ingress.className }}"
+  rules:
+    - host: "{{ .Values.museum.ingress.host }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: museum
+                port:
+                  number: {{ .Values.museum.ports.api }}
+{{- if .Values.museum.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        {{- range .Values.museum.ingress.tls.hosts }}
+        - "{{ . }}"
+        {{- end }}
+      secretName: "{{ .Values.museum.ingress.tls.secretName }}"
+{{- end }}
+{{- end }}

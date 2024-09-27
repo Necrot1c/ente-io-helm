@@ -1,0 +1,29 @@
+{{- if .Values.web.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: "{{ .Values.web.ingress.className }}"
+  rules:
+    - host: "{{ .Values.web.ingress.host }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: {{ .Values.web.ports.http }}
+{{- if .Values.web.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        {{- range .Values.web.ingress.tls.hosts }}
+        - "{{ . }}"
+        {{- end }}
+      secretName: "{{ .Values.web.ingress.tls.secretName }}"
+{{- end }}
+{{- end }}

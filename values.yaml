@@ -1,0 +1,60 @@
+museum:
+  image: ghcr.io/ente-io/server:bf5e2004cfd69bae7ce83d57a3fa493953e34cef
+  ports:
+    api: 8080
+    metrics: 2112
+  ingress:
+    enabled: true
+    className: tailscale
+    host: museum
+    tls:
+      enabled: true
+      secretName: "museum-tls-secret"
+      hosts:
+      - museum
+  service:
+    type: LoadBalancer
+    annotations:
+      metallb.universe.tf/loadBalancerIPs: 10.0.0.1
+  env:
+    ENTE_KEY_ENCRYPTION: ""
+    ENTE_KEY_HASH: ""
+    ENTE_JWT_SECRET: ""
+    ENTE_ARE_LOCAL_BUCKETS: true
+    ENTE_USE_PATH_STYLE_URLS: false
+    ENTE_S3_B2_EU_CEN_KEY:
+    ENTE_S3_B2_EU_CEN_SECRET: 
+    ENTE_S3_B2_EU_CEN_ENDPOINT: 
+    ENTE_S3_B2_EU_CEN_REGION: 
+    ENTE_S3_B2_EU_CEN_BUCKET: 
+    ENTE_INTERNAL_HARDCODED_OTT_LOCAL_DOMAIN_SUFFIX: "@example.com"
+    ENTE_INTERNAL_HARDCODED_OTT_LOCAL_DOMAIN_VALUE: 123456
+
+web:
+  image: "andi91/ente-io_web-photos:2024-09-21"
+  ports:
+    http: 80
+  ingress:
+    enabled: true
+    className: tailscale
+    host: ente
+    tls:
+      enabled: true
+      secretName: "web-tls-secret"
+      hosts:
+      - ente
+  service:
+    type: LoadBalancer
+    annotations:
+      metallb.universe.tf/loadBalancerIPs: 10.0.0.2
+  env:
+    ENDPOINT: "http://10.0.0.1:8080"
+    ALBUMS_ENDPOINT: "http://10.0.0.2"
+    ENTE_APPS_PUBLIC_ALBUMS: "http://10.0.0.2"
+postgres:
+  image: "postgres:12"
+  username: "pguser"
+  password: "pgpass"
+  database: "ente_db"
+  port: 5432
+  storage: "1Gi"

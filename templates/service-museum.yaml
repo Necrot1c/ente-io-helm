@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: museum
+{{- if .Values.museum.service.annotations }}  
+  annotations:
+    {{- toYaml .Values.museum.service.annotations | nindent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.museum.service.type }}
+  ports:
+    - port: {{ .Values.museum.ports.api }}
+      targetPort: {{ .Values.museum.ports.api }}
+      name: api
+    - port: {{ .Values.museum.ports.metrics }}
+      targetPort: {{ .Values.museum.ports.metrics }}
+      name: metrics
+  selector:
+    app: museum

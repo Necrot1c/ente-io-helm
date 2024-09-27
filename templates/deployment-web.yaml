@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: "{{ .Values.web.image }}"
+        ports:
+        - containerPort: {{ .Values.web.ports.http }}
+        env:
+        - name: ENDPOINT
+          value: "{{ .Values.web.env.ENDPOINT }}"
+        - name: ALBUMS_ENDPOINT
+          value: "{{ .Values.web.env.ALBUMS_ENDPOINT }}"
+        - name: ENTE_APPS_PUBLIC_ALBUMS
+          value: "{{ .Values.web.env.ENTE_APPS_PUBLIC_ALBUMS }}"
+        - name: ENTE_KEY_ENCRYPTION
+          value: "{{ .Values.web.env.ENTE_KEY_ENCRYPTION }}"
+        - name: ENTE_KEY_HASH
+          value: "{{ .Values.web.env.ENTE_KEY_HASH }}"
+        - name: ENTE_JWT_SECRET
+          value: "{{ .Values.web.env.ENTE_JWT_SECRET }}"
+        - name: ENTE_S3_B2_EU_CEN_KEY
+          value: "{{ .Values.web.env.ENTE_S3_B2_EU_CEN_KEY }}"
+        - name: ENTE_S3_B2_EU_CEN_SECRET
+          value: "{{ .Values.web.env.ENTE_S3_B2_EU_CEN_SECRET }}"
+        - name: ENTE_S3_B2_EU_CEN_ENDPOINT
+          value: "{{ .Values.web.env.ENTE_S3_B2_EU_CEN_ENDPOINT }}"
+        - name: ENTE_S3_B2_EU_CEN_REGION
+          value: "{{ .Values.web.env.ENTE_S3_B2_EU_CEN_REGION }}"
+        - name: ENTE_S3_B2_EU_CEN_BUCKET
+          value: "{{ .Values.web.env.ENTE_S3_B2_EU_CEN_BUCKET }}"
+        - name: ENTE_S3_ARE_LOCAL_BUCKETS
+          value: "{{ .Values.web.env.ENTE_S3_ARE_LOCAL_BUCKETS }}"
+
+        - name: ENTE_INTERNAL_HARDCODED_OTT_LOCAL_DOMAIN_SUFFIX
+          value: "{{ .Values.web.env.ENTE_INTERNAL_HARDCODED_OTT_LOCAL_DOMAIN_SUFFIX }}"
+        - name: ENTE_INTERNAL_HARDCODED_OTT_LOCAL_DOMAIN_VALUE
+          value: "{{ .Values.web.env.ENTE_INTERNAL_HARDCODED_OTT_LOCAL_DOMAIN_VALUE }}"
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.web.ports.http }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
